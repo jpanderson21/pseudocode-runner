@@ -1,22 +1,21 @@
-from openai import OpenAI
+import sys
+from fileutilities import FileUtilities as util
+from llminterface import LLMInterface
 
-client = OpenAI()
-
-def list_models():
-    for model in client.models.list():
-        print(model.id)
 
 def main():
-    current_model = "gpt-4o"
-    completion = client.chat.completions.create(
-        model=current_model,
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that takes pseudocode and converts it to working Python code."},
-            {"role": "user", "content": "Hi, what can you help me with?"}
-        ],
-        max_tokens=100,
-        temperature=0.5
-    )
-    print(completion.choices[0].message.content)
+    if len(sys.argv) < 1:
+        raise Exception("No input file given.")
+
+    input_file = sys.argv[1]
+    input = util.read_file(input_file)
+
+    llm = LLMInterface()
+    python_code = llm.convert_pseudocode(input)
+
+    util.write_file("temp.py", python_code)
+    util.execute_script("temp.py")
+    util.delete_file("temp.py")
+
 
 main()
