@@ -19,4 +19,4 @@ class FileUtilities:
     @classmethod
     def execute_script(cls, filepath):
         with open(filepath, "r") as f:
-            exec(f.read())
+            exec(f.read(), globals())
